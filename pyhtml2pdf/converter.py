@@ -12,7 +12,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from .compressor import __compress
 
 
-def convert(source: str, target: str, timeout: int = 2, compress: bool = False, power: int = 0, install_driver: bool = True):
+def convert(source: str, target: str, timeout: int = 2, compress: bool = False, power: int = 0, install_driver: bool = True, print_options = {}):
     '''
     Convert a given html file or website into PDF
 
@@ -23,7 +23,7 @@ def convert(source: str, target: str, timeout: int = 2, compress: bool = False, 
     :param int power: power of the compression. Default value is 0. This can be 0: default, 1: prepress, 2: printer, 3: ebook, 4: screen
    '''
 
-    result = __get_pdf_from_html(source, timeout, install_driver)
+    result = __get_pdf_from_html(source, timeout, install_driver, print_options)
 
     if compress:
         __compress(result, target, power)
@@ -66,7 +66,10 @@ def __get_pdf_from_html(path: str, timeout: int, install_driver: bool, print_opt
     try:
        WebDriverWait(driver, timeout).until(staleness_of(driver.find_element_by_tag_name('html')))
     except TimeoutException:
-        calculated_print_options = {
+        if print_options:
+            calculated_print_options = print_options
+        else:
+            calculated_print_options = {
             'landscape': False,
             'displayHeaderFooter': False,
             'printBackground': True,
