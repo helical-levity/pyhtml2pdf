@@ -52,6 +52,7 @@ def __get_pdf_from_html(path: str, timeout: int, install_driver: bool, print_opt
     webdriver_options.add_argument('--disable-gpu')
     webdriver_options.add_argument('--no-sandbox')
     webdriver_options.add_argument('--disable-dev-shm-usage')
+    webdriver_options.add_argument('--disable-popup-blocking')
     webdriver_options.experimental_options['prefs'] = webdriver_prefs
 
     webdriver_prefs['profile.default_content_settings'] = {'images': 2}
@@ -64,6 +65,10 @@ def __get_pdf_from_html(path: str, timeout: int, install_driver: bool, print_opt
     driver.get(path)
 
     try:
+       alert = driver.switch_to_alert()
+       alert.accept()
+       alert = driver.switch_to_alert()
+       alert.accept()
        WebDriverWait(driver, timeout).until(staleness_of(driver.find_element_by_tag_name('html')))
     except TimeoutException:
         if print_options:
